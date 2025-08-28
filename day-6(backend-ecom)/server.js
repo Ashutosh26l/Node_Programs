@@ -10,6 +10,7 @@ import userRoutes    from './routes/userRoutes.js';
 import orderRoutes   from './routes/orderRoutes.js';
 
 import { notFound, errorHandler } from './utils/errorMiddleware.js';
+import { rateLimiter, getRateLimitStatus } from './middleware/rateLimiter.js';
 
 dotenv.config();
 const app = express();
@@ -19,6 +20,12 @@ app.use(express.json());
 app.use(cors());
 app.use(morgan('dev'));
 app.use(express.static('public'));
+
+// Apply rate limiter to all API routes
+app.use('/api', rateLimiter);
+
+// Rate limit status endpoint (for debugging)
+app.get('/api/rate-limit-status', getRateLimitStatus);
 
 // api routes
 app.use('/api/products', productRoutes);
